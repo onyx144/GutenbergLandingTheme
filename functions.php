@@ -19,6 +19,7 @@ if ( ! defined( '_S_VERSION' ) ) {
  * runs before the init hook. The init hook is too late for some features, such
  * as indicating support for post thumbnails.
  */
+
 function template_theme_setup() {
 	/*
 		* Make theme available for translation.
@@ -106,6 +107,10 @@ function template_theme_setup() {
 }
 add_action( 'after_setup_theme', 'template_theme_setup' );
 
+require get_template_directory() . '/inc/admin/header-settings-api.php';
+require get_template_directory() . '/inc/admin/page-option-api.php';
+require_once( get_template_directory() . '/inc/admin/functions-admin.php' );
+
 /**
  * Set the content width in pixels, based on the theme's design and stylesheet.
  *
@@ -190,6 +195,12 @@ add_action( 'wp_enqueue_scripts', 'template_theme_scripts' );
 // }
 
 // Здесь можно добавлять ваши собственные функции, хуки и фильтры
+
+function template_theme_enqueue_scripts() {
+    wp_enqueue_script( 'template-theme-script', get_template_directory_uri() . '/asset/js/script.js', array( 'jquery' ), '1.0.011', true );
+}
+add_action( 'wp_enqueue_scripts', 'template_theme_enqueue_scripts' );
+
 function template_theme_add_admin_menu() {
     add_menu_page(
         __( 'Настройки темы', 'template_theme' ), // Заголовок страницы (title)
@@ -221,7 +232,10 @@ function template_theme_render_settings_page() {
 
         <h2 class="nav-tab-wrapper">
             <a href="?page=template_theme_settings&tab=header" class="nav-tab <?php echo $active_tab == 'header' ? 'nav-tab-active' : ''; ?>">
-                <?php esc_html_e( 'Хедер', 'template_theme' ); ?>
+                <?php esc_html_e( 'Header', 'template_theme' ); ?>
+            </a>
+			<a href="?page=template_theme_settings&tab=page_option" class="nav-tab <?php echo $active_tab == 'page_option' ? 'nav-tab-active' : ''; ?>">
+                <?php esc_html_e( 'Page Option', 'template_theme' ); ?>
             </a>
             <a href="?page=template_theme_settings&tab=footer" class="nav-tab <?php echo $active_tab == 'footer' ? 'nav-tab-active' : ''; ?>">
                 <?php esc_html_e( 'Футер', 'template_theme' ); ?>
@@ -248,7 +262,10 @@ function template_theme_render_settings_page() {
 
             if ( $active_tab == 'header' ) {
                 $settings_file = $settings_dir . 'header-settings.php';
-            } elseif ( $active_tab == 'footer' ) {
+            } 
+			elseif ( $active_tab == 'page_option' ) {
+                $settings_file = $settings_dir . 'page-option.php';
+			}elseif ( $active_tab == 'footer' ) {
                 $settings_file = $settings_dir . 'footer-settings.php';
             } elseif ( $active_tab == 'banner' ) {
                 $settings_file = $settings_dir . 'banner-settings.php';
@@ -271,6 +288,188 @@ function template_theme_render_settings_page() {
 
     </div><?php
 }
+
+
+/**
+ * Добавляем метаполя для страниц и категорий.
+ */
+function template_theme_add_banner_meta_boxes() {
+    add_meta_box(
+        'template_theme_banner_settings',
+        'Настройки баннера',
+        'template_theme_render_banner_meta_box',
+        ['page', 'category'],
+        'normal',
+        'high'
+    );
+}
+add_action('add_meta_boxes', 'template_theme_add_banner_meta_boxes');
+
+/**
+ * Отрисовка метаполя баннера.
+ */
+function template_theme_render_banner_meta_box($post) {
+    // Получаем значения метаполей
+    $banner_mobile = get_post_meta($post->ID, 'banner_mobile', true);
+    $banner_desktop = get_post_meta($post->ID, 'banner_desktop', true);
+    $banner_title = get_post_meta($post->ID, 'banner_title', true);
+    $banner_text = get_post_meta($post->ID, 'banner_text', true);
+    $button_text = get_post_meta($post->ID, 'button_text', true);
+    $button_url = get_post_meta($post->ID, 'button_url', true);
+    $icon1 = get_post_meta($post->ID, 'icon1', true);
+    $text1 = get_post_meta($post->ID, 'text1', true);
+    $icon2 = get_post_meta($post->ID, 'icon2', true);
+    $text2 = get_post_meta($post->ID, 'text2', true);
+    $icon3 = get_post_meta($post->ID, 'icon3', true);
+    $text3 = get_post_meta($post->ID, 'text3', true);
+
+    // Выводим поля для ввода
+    ?>
+    <p>
+        <label for="banner_mobile">Мобильный баннер:</label><br>
+        <input type="text" id="banner_mobile" name="banner_mobile" value="<?php echo esc_attr($banner_mobile); ?>" class="widefat">
+        <button class="upload_image_button button button-primary" data-target="banner_mobile">Загрузить изображение</button>
+        <?php if ($banner_mobile) : ?>
+            <img src="<?php echo esc_url($banner_mobile); ?>" style="max-width: 100px; max-height: 100px;">
+        <?php endif; ?>
+    </p>
+
+    <p>
+        <label for="banner_desktop">Десктоп баннер:</label><br>
+        <input type="text" id="banner_desktop" name="banner_desktop" value="<?php echo esc_attr($banner_desktop); ?>" class="widefat">
+        <button class="upload_image_button button button-primary" data-target="banner_desktop">Загрузить изображение</button>
+        <?php if ($banner_desktop) : ?>
+            <img src="<?php echo esc_url($banner_desktop); ?>" style="max-width: 100px; max-height: 100px;">
+        <?php endif; ?>
+    </p>
+
+    <p>
+        <label for="banner_title">Заголовок:</label><br>
+        <input type="text" id="banner_title" name="banner_title" value="<?php echo esc_attr($banner_title); ?>" class="widefat">
+    </p>
+
+    <p>
+        <label for="banner_text">Текст:</label><br>
+        <textarea id="banner_text" name="banner_text" class="widefat"><?php echo esc_textarea($banner_text); ?></textarea>
+    </p>
+
+    <p>
+        <label for="button_text">Текст кнопки:</label><br>
+        <input type="text" id="button_text" name="button_text" value="<?php echo esc_attr($button_text); ?>" class="widefat">
+    </p>
+
+    <p>
+        <label for="button_url">URL кнопки:</label><br>
+        <input type="url" id="button_url" name="button_url" value="<?php echo esc_attr($button_url); ?>" class="widefat">
+    </p>
+
+    <p>
+        <label for="icon1">Иконка 1:</label><br>
+        <input type="text" id="icon1" name="icon1" value="<?php echo esc_attr($icon1); ?>" class="widefat">
+        <button class="upload_image_button button button-primary" data-target="icon1">Загрузить изображение</button>
+        <?php if ($icon1) : ?>
+            <img src="<?php echo esc_url($icon1); ?>" style="max-width: 50px; max-height: 50px;">
+        <?php endif; ?>
+    </p>
+
+    <p>
+        <label for="text1">Текст 1:</label><br>
+        <input type="text" id="text1" name="text1" value="<?php echo esc_attr($text1); ?>" class="widefat">
+    </p>
+
+    <p>
+        <label for="icon2">Иконка 2:</label><br>
+        <input type="text" id="icon2" name="icon2" value="<?php echo esc_attr($icon2); ?>" class="widefat">
+        <button class="upload_image_button button button-primary" data-target="icon2">Загрузить изображение</button>
+        <?php if ($icon2) : ?>
+            <img src="<?php echo esc_url($icon2); ?>" style="max-width: 50px; max-height: 50px;">
+        <?php endif; ?>
+    </p>
+
+    <p>
+        <label for="text2">Текст 2:</label><br>
+        <input type="text" id="text2" name="text2" value="<?php echo esc_attr($text2); ?>" class="widefat">
+    </p>
+
+    <p>
+        <label for="icon3">Иконка 3:</label><br>
+        <input type="text" id="icon3" name="icon3" value="<?php echo esc_attr($icon3); ?>" class="widefat">
+        <button class="upload_image_button button button-primary" data-target="icon3">Загрузить изображение</button>
+        <?php if ($icon3) : ?>
+            <img src="<?php echo esc_url($icon3); ?>" style="max-width: 50px; max-height: 50px;">
+        <?php endif; ?>
+    </p>
+
+    <p>
+        <label for="text3">Текст 3:</label><br>
+        <input type="text" id="text3" name="text3" value="<?php echo esc_attr($text3); ?>" class="widefat">
+    </p>
+
+    <script>
+        jQuery(document).ready(function($) {
+            $('.upload_image_button').click(function(e) {
+                e.preventDefault();
+                var target = $(this).data('target');
+                var image = wp.media({
+                    title: 'Загрузить изображение',
+                    multiple: false
+                }).open()
+                .on('select', function() {
+                    var uploaded_image = image.state().get('selection').first();
+                    var image_url = uploaded_image.toJSON().url;
+                    $('#' + target).val(image_url);
+                });
+            });
+        });
+    </script>
+    <?php
+}
+
+/**
+ * Сохранение метаполей баннера.
+ */
+function template_theme_save_banner_meta_box($post_id) {
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
+    if (!current_user_can('edit_post', $post_id)) return;
+
+    if (isset($_POST['banner_mobile'])) {
+        update_post_meta($post_id, 'banner_mobile', esc_url_raw($_POST['banner_mobile']));
+    }
+    if (isset($_POST['banner_desktop'])) {
+        update_post_meta($post_id, 'banner_desktop', esc_url_raw($_POST['banner_desktop']));
+    }
+    if (isset($_POST['banner_title'])) {
+        update_post_meta($post_id, 'banner_title', sanitize_text_field($_POST['banner_title']));
+    }
+    if (isset($_POST['banner_text'])) {
+        update_post_meta($post_id, 'banner_text', sanitize_textarea_field($_POST['banner_text']));
+    }
+    if (isset($_POST['button_text'])) {
+        update_post_meta($post_id, 'button_text', sanitize_text_field($_POST['button_text']));
+    }
+    if (isset($_POST['button_url'])) {
+        update_post_meta($post_id, 'button_url', esc_url_raw($_POST['button_url']));
+    }
+    if (isset($_POST['icon1'])) {
+        update_post_meta($post_id, 'icon1', esc_url_raw($_POST['icon1']));
+    }
+    if (isset($_POST['text1'])) {
+        update_post_meta($post_id, 'text1', sanitize_text_field($_POST['text1']));
+    }
+    if (isset($_POST['icon2'])) {
+        update_post_meta($post_id, 'icon2', esc_url_raw($_POST['icon2']));
+    }
+    if (isset($_POST['text2'])) {
+        update_post_meta($post_id, 'text2', sanitize_text_field($_POST['text2']));
+    }
+    if (isset($_POST['icon3'])) {
+        update_post_meta($post_id, 'icon3', esc_url_raw($_POST['icon3']));
+    }
+    if (isset($_POST['text3'])) {
+        update_post_meta($post_id, 'text3', sanitize_text_field($_POST['text3']));
+    }
+}
+add_action('save_post', 'template_theme_save_banner_meta_box');
 
 ?>
 <?php // В конце файла functions.php НЕ рекомендуется ставить закрывающий тег ?>
