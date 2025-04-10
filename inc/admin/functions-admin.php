@@ -77,4 +77,35 @@ function template_theme_add_favicon() {
 }
 add_action( 'wp_head', 'template_theme_add_favicon' );
 
+function template_theme_is_yoast_seo_installed() {
+    return defined('WPSEO_VERSION');
+}
+function template_theme_install_yoast_seo() {
+    include_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+    include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+    include_once ABSPATH . 'wp-admin/includes/class-plugin-upgrader.php';
+
+    $plugin_slug = 'wordpress-seo';
+    $plugin_info = plugins_api('plugin_information', array('slug' => $plugin_slug));
+
+    if (is_wp_error($plugin_info)) {
+        return false; // Ошибка получения информации о плагине
+    }
+
+    $plugin_file = $plugin_slug . '/' . $plugin_slug . '.php';
+
+    if (is_plugin_installed($plugin_file)) {
+        return true; // Плагин уже установлен
+    }
+
+    $upgrader = new Plugin_Upgrader(new WP_Upgrader_Skin());
+    $install_result = $upgrader->install($plugin_info->download_link);
+
+    if (is_wp_error($install_result)) {
+        return false; 
+    }
+
+    return true; 
+}
+
 ?>

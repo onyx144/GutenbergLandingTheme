@@ -243,6 +243,9 @@ function template_theme_render_settings_page() {
             <a href="?page=template_theme_settings&tab=banner" class="nav-tab <?php echo $active_tab == 'banner' ? 'nav-tab-active' : ''; ?>">
                 <?php esc_html_e( 'Банер', 'template_theme' ); ?>
             </a>
+            <a href="?page=template_theme_settings&tab=plagin" class="nav-tab <?php echo $active_tab == 'plagin' ? 'nav-tab-active' : ''; ?>">
+                <?php esc_html_e( 'Plagins', 'template_theme' ); ?>
+            </a>
             <?php // Сюда можно добавить ссылки на другие вкладки, если понадобится ?>
         </h2>
 
@@ -269,7 +272,11 @@ function template_theme_render_settings_page() {
                 $settings_file = $settings_dir . 'footer-settings.php';
             } elseif ( $active_tab == 'banner' ) {
                 $settings_file = $settings_dir . 'banner-settings.php';
-            } else {
+            } 
+            elseif ( $active_tab == 'plagin' ) {
+                $settings_file = $settings_dir . 'plagins-options.php';
+            }
+            else {
                 // Если вкладка неизвестна, можно показать вкладку по умолчанию или ошибку
                 $settings_file = $settings_dir . 'header-settings.php';
             }
