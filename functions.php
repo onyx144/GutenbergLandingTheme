@@ -110,6 +110,7 @@ add_action( 'after_setup_theme', 'template_theme_setup' );
 require get_template_directory() . '/inc/admin/header-settings-api.php';
 require get_template_directory() . '/inc/admin/page-option-api.php';
 require_once( get_template_directory() . '/inc/admin/functions-admin.php' );
+require_once( get_template_directory() . '/inc/admin/function-tos.php' );
 
 /**
  * Set the content width in pixels, based on the theme's design and stylesheet.
