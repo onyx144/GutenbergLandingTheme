@@ -92,6 +92,6 @@ function display_custom_toc($post_id) {
         echo '</ul>';
         echo '</div>';
     }
-}
+}//
 ?>
 
