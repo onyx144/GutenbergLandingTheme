@@ -24,15 +24,18 @@ function custom_toc_meta_box_callback($post) {
     <div id="custom_toc_items_container">
         <?php
         if (!empty($items) && is_array($items)) {
-            foreach ($items as $item) {
-                ?>
-                <div class="custom_toc_item">
-                    <label>Заголовок:</label>
-                    <input type="text" name="custom_toc_items[title][]" value="<?php echo esc_attr($item['title']); ?>">
-                    <label>Ссылка:</label>
-                    <input type="text" name="custom_toc_items[link][]" value="<?php echo esc_attr($item['link']); ?>">
-                </div>
-                <?php
+            foreach ($items as $index => $item) {
+                if (isset($item['title']) && isset($item['link'])) {
+                    ?>
+                    <div class="custom_toc_item">
+                        <label>Заголовок:</label>
+                        <input type="text" name="custom_toc_items[title][]" value="<?php echo esc_attr($item['title']); ?>">
+                        <label>Якорь:</label>
+                        <input type="text" name="custom_toc_items[link][]" value="<?php echo esc_attr($item['link']); ?>">
+                        <button type="button" class="remove_custom_toc_item" data-index="<?php echo $index; ?>">×</button>
+                    </div>
+                    <?php
+                }
             }
         }
         ?>
@@ -42,7 +45,11 @@ function custom_toc_meta_box_callback($post) {
     <script>
         jQuery(document).ready(function($) {
             $('#add_custom_toc_item').click(function() {
-                $('#custom_toc_items_container').append('<div class="custom_toc_item"><label>Заголовок:</label><input type="text" name="custom_toc_items[title][]"><label>Ссылка:</label><input type="text" name="custom_toc_items[link][]"></div>');
+                $('#custom_toc_items_container').append('<div class="custom_toc_item"><label>Заголовок:</label><input type="text" name="custom_toc_items[title][]"><label>Якорь:</label><input type="text" name="custom_toc_items[link][]"><button type="button" class="remove_custom_toc_item">×</button></div>');
+            });
+
+            $(document).on('click', '.remove_custom_toc_item', function() {
+                $(this).closest('.custom_toc_item').remove();
             });
         });
     </script>
@@ -72,8 +79,19 @@ function custom_toc_save_meta_box_data($post_id) {
         update_post_meta($post_id, '_custom_toc_enabled', 'off');
     }
 
-    if (isset($_POST['custom_toc_items'])) {
-        update_post_meta($post_id, '_custom_toc_items', $_POST['custom_toc_items']);
+    if (isset($_POST['custom_toc_items']) && is_array($_POST['custom_toc_items']['title']) && is_array($_POST['custom_toc_items']['link'])) {
+        $items = array();
+        foreach ($_POST['custom_toc_items']['title'] as $key => $title) {
+            if (isset($_POST['custom_toc_items']['link'][$key])) {
+                $items[] = array(
+                    'title' => sanitize_text_field($title),
+                    'link' => sanitize_text_field($_POST['custom_toc_items']['link'][$key])
+                );
+            }
+        }
+        update_post_meta($post_id, '_custom_toc_items', $items);
+    } else {
+        update_post_meta($post_id, '_custom_toc_items', array());
     }
 }
 add_action('save_post', 'custom_toc_save_meta_box_data');
@@ -87,11 +105,12 @@ function display_custom_toc($post_id) {
         echo '<h3>Содержание</h3>';
         echo '<ul>';
         foreach ($items as $item) {
-            echo '<li><a href="' . esc_url($item['link']) . '">' . esc_html($item['title']) . '</a></li>';
+            if (isset($item['title']) && isset($item['link'])) {
+                echo '<li><a href="#' . esc_attr($item['link']) . '">' . esc_html($item['title']) . '</a></li>';
+            }
         }
         echo '</ul>';
         echo '</div>';
     }
-}//
+}
 ?>
-

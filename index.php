@@ -17,6 +17,7 @@ get_header(); // Подключаем header.php
 
     <main id="primary" class="site-main">
 
+    
         <?php
         if ( have_posts() ) : // Проверяем, есть ли посты для вывода
 
@@ -52,7 +53,11 @@ get_header(); // Подключаем header.php
                         ?>
                     </header><div class="entry-content">
                         <?php
+                        if ( is_singular( 'page' ) ) {
+                            display_custom_toc( get_the_ID() );
+                        }
                         if( is_singular() ){
+                            
                              the_content( sprintf( // Выводим полный контент для одиночных записей
                                 wp_kses(
                                     /* translators: %s: Name of current post. Only visible to screen readers */
