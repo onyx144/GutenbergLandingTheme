@@ -142,7 +142,83 @@ h1, h2, h3, h4, h5, h6, blockquote, caption, figcaption, p {
     font-size: 24px;
     cursor: pointer;
 }
+.custom_block_output {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding: 20px; */
+    margin-bottom: 20px;
+    flex-direction: row;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    text-align: center;
+    border: 4px solid #A40F0F;
+    width: 90%;
+    /* text-align: center; */
+    margin: auto;
+    border-radius: 25px;
+  }
+  
+  .image_left,
+  .image_right {
+    /* width: 20%; */
+  }
+  
+  .text_left,
+  .text_center,
+  .text_right {
+    /* width: 25%; */
+  }
+  
+  .button_link {
+    width: 10%;
+  }
+.flex.left {
+    /* width: 33%; */
+}
 
+.image_left img {
+    width: 100%;
+    height: auto;
+}
+
+.image_right img {
+    width: 100%;
+    height: auto;
+}
+
+.button_link {
+    display: flex;
+    justify-content: center;
+    border: 2px solid #0F6506;
+    /* background: #0F6506; */
+    /* color: white; */
+    text-shadow: none;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 10px 20px;
+}
+
+.flex {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* background: #E5EFEF; */
+    /* height: 100%; */
+    /* padding: 20px; */
+    justify-content: center;
+    border-radius: 20px;
+}
+
+.flex.left {
+    background: #E5EFEF;
+    height: 100%;
+}
+
+.flex.right {
+    padding: 20px;
+}
 /* Адаптивные стили (для мобильных устройств) */
 @media (max-width: 768px) {
    
@@ -197,5 +273,9 @@ h1, h2, h3, h4, h5, h6, blockquote, caption, figcaption, p {
     /* Показываем меню при клике на кнопку "Бургер" */
     .main-navigation.show {
         display: flex;
+    }
+    .custom_block_output {
+        display: flex;
+        flex-direction: column
     }
 }
