@@ -110,6 +110,9 @@ add_action( 'after_setup_theme', 'template_theme_setup' );
 require get_template_directory() . '/inc/admin/short-block-setting.php';
 require get_template_directory() . '/inc/admin/header-settings-api.php';
 require get_template_directory() . '/inc/admin/page-option-api.php';
+require get_template_directory() . '/inc/admin/pop-up.php';
+require get_template_directory() . '/inc/admin/style-register.php';
+
 require_once( get_template_directory() . '/inc/admin/functions-admin.php' );
 require_once( get_template_directory() . '/inc/admin/function-tos.php' );
 
@@ -245,12 +248,19 @@ function template_theme_render_settings_page() {
             <a href="?page=template_theme_settings&tab=banner" class="nav-tab <?php echo $active_tab == 'banner' ? 'nav-tab-active' : ''; ?>">
                 <?php esc_html_e( 'Банер', 'template_theme' ); ?>
             </a>
+            <a href="?page=template_theme_settings&tab=style" class="nav-tab <?php echo $active_tab == 'style' ? 'nav-tab-active' : ''; ?>">
+              <?php esc_html_e( 'Style', 'template_theme' ); ?>
+            </a>
+            <a href="?page=template_theme_settings&tab=popup" class="nav-tab <?php echo $active_tab == 'popup' ? 'nav-tab-active' : ''; ?>">
+                <?php esc_html_e( 'Pop Up', 'template_theme' ); ?>
+            </a>
             <a href="?page=template_theme_settings&tab=shortcode_block" class="nav-tab <?php echo $active_tab == 'shortcode_block' ? 'nav-tab-active' : ''; ?>">
                 <?php esc_html_e( 'Shortcode Block', 'template_theme' ); ?>
             </a>
             <a href="?page=template_theme_settings&tab=plagin" class="nav-tab <?php echo $active_tab == 'plagin' ? 'nav-tab-active' : ''; ?>">
                 <?php esc_html_e( 'Plagins', 'template_theme' ); ?>
             </a>
+
             <?php // Сюда можно добавить ссылки на другие вкладки, если понадобится ?>
         </h2>
 
@@ -267,6 +277,7 @@ function template_theme_render_settings_page() {
 
             // Подключаем файл с контентом для активной вкладки
             $settings_dir = get_template_directory() . '/inc/settings/'; // Путь к папке с файлами настроек
+            $admin_dir = get_template_directory() . '/inc/admin/'; // Путь к папке с файлами настроек
 
             if ( $active_tab == 'header' ) {
                 $settings_file = $settings_dir . 'header-settings.php';
@@ -277,6 +288,12 @@ function template_theme_render_settings_page() {
                 $settings_file = $settings_dir . 'footer-settings.php';
             } elseif ( $active_tab == 'banner' ) {
                 $settings_file = $settings_dir . 'banner-settings.php';
+            } 
+            elseif ( $active_tab == 'popup' ) {
+                $settings_file = $settings_dir . 'popup-page.php';
+            } 
+            elseif ( $active_tab == 'style' ) {
+                $settings_file = $settings_dir . 'style-settings.php';
             } 
             elseif ( $active_tab == 'plagin' ) {
                 $settings_file = $settings_dir . 'plagins-options.php';

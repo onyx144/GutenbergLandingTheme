@@ -18,6 +18,9 @@ Tags: one-column, custom-colors, custom-menu, custom-logo, editor-style, feature
  * Link styles
  * https://github.com/WordPress/gutenberg/issues/42319
  */
+ body {
+    background-color: 0;
+ }
  a {
 	text-decoration-thickness: 1px !important;
 	text-underline-offset: .1em;
@@ -59,7 +62,35 @@ h1, h2, h3, h4, h5, h6, blockquote, caption, figcaption, p {
 .more-link {
 	display: block;
 }
+#custom_popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
 
+.popup_content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    position: relative;
+}
+
+.close_popup {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background-color: transparent;
+    font-size: 20px;
+    cursor: pointer;
+}
 /* Основные стили для хедера */
 .site-header {
     display: flex;
@@ -197,7 +228,7 @@ h1, h2, h3, h4, h5, h6, blockquote, caption, figcaption, p {
     text-shadow: none;
     border-radius: 10px;
     cursor: pointer;
-    padding: 10px 20px;
+    padding: 10px 30px;
 }
 
 .flex {

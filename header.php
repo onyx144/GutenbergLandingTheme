@@ -4,7 +4,6 @@
  *
  * This is the template that displays all of the <head> section and everything up until <div id="content">
  *
- * @link https://developer.wordpress.org/themes/basics/template-files/#template-partials
  *
  * @package template_theme
  */
@@ -19,7 +18,8 @@ $login_button_text      = $header_options['login_button_text'] ?? __( 'Вход'
 $login_button_url       = $header_options['login_button_url'] ?? wp_login_url(); // URL по умолчанию - страница входа WP
 $register_button_text   = $header_options['register_button_text'] ?? __( 'Регистрация', 'template_theme' );
 $register_button_url    = $header_options['register_button_url'] ?? wp_registration_url(); // URL по умолчанию - страница регистрации WP (если разрешена)
-
+$options = get_option('custom_blocks_options');
+$popup = isset($options['popup']) ? $options['popup'] : array();
 ?>
 <!doctype html>
 <html <?php language_attributes(); ?>>
@@ -27,8 +27,96 @@ $register_button_url    = $header_options['register_button_url'] ?? wp_registrat
     <meta charset="<?php bloginfo( 'charset' ); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="https://gmpg.org/xfn/11">
+    <style>
+    body {
+        background-color: <?php echo esc_attr(get_option('template_theme_style_options')['site_background_color']); ?>;
+        font-family: <?php echo esc_attr(get_option('template_theme_style_options')['site_font_family']); ?>;
+        color: <?php echo esc_attr(get_option('template_theme_style_options')['site_font_color']); ?>;
+        font-size: <?php echo esc_attr(get_option('template_theme_style_options')['site_font_size']); ?>px;
+    }
 
+    table {
+        <?php echo esc_attr(get_option('template_theme_style_options')['table_style']); ?>
+    }
+
+    h1, h2, h3, h4, h5, h6, p {
+        color: <?php echo esc_attr(get_option('template_theme_style_options')['heading_default_color']); ?>;
+    }
+
+    h1 {
+        color: <?php echo esc_attr(get_option('template_theme_style_options')['h1_color'] ?: get_option('template_theme_style_options')['heading_default_color']); ?>;
+    }
+
+    h2 {
+        color: <?php echo esc_attr(get_option('template_theme_style_options')['h2_color'] ?: get_option('template_theme_style_options')['heading_default_color']); ?>;
+    }
+
+    p {
+        color: <?php echo esc_attr(get_option('template_theme_style_options')['p_color'] ?: get_option('template_theme_style_options')['heading_default_color']); ?>;
+    }
+    a {
+        color: <?php echo esc_attr(get_option('template_theme_style_options')['a_color']); ?>;
+    }
+
+</style>
+    <script>
+    jQuery(document).ready(function($) {
+        var popup = $('#custom_popup');
+        var condition = '<?php echo esc_js($popup['condition']); ?>';
+        var conditionValue = '<?php echo esc_js($popup['condition_value']); ?>';
+
+        function showPopup() {
+            popup.fadeIn();
+        }
+
+        function hidePopup() {
+            popup.fadeOut();
+        }
+
+        $('.close_popup').click(hidePopup);
+
+        switch (condition) {
+            case 'timer':
+                setTimeout(showPopup, conditionValue * 1000);
+                break;
+            case 'scroll':
+                $(window).scroll(function() {
+                    if ($(window).scrollTop() > $(document).height() * conditionValue / 100) {
+                        showPopup();
+                        $(window).off('scroll');
+                    }
+                });
+                break;
+            case 'pages':
+                // Логика для показа Pop-up при переходах по страницам
+                // (требует дополнительной реализации)
+                break;
+            case 'wait':
+                setTimeout(showPopup, conditionValue * 1000);
+                break;
+            default:
+                break;
+        }
+    });
+</script>
     <?php wp_head(); ?>
+    <div id="custom_popup" style="display: none;">
+    <div class="popup_content">
+        <?php if (!empty($popup['image'])) : ?>
+            <img src="<?php echo esc_url($popup['image']); ?>" alt="">
+        <?php endif; ?>
+        <?php if (!empty($popup['title'])) : ?>
+            <h2><?php echo esc_html($popup['title']); ?></h2>
+        <?php endif; ?>
+        <?php if (!empty($popup['text'])) : ?>
+            <p><?php echo wp_kses_post($popup['text']); ?></p>
+        <?php endif; ?>
+        <?php if (!empty($popup['button_text']) && !empty($popup['button_link'])) : ?>
+            <a href="<?php echo esc_url($popup['button_link']); ?>"><?php echo esc_html($popup['button_text']); ?></a>
+        <?php endif; ?>
+        <button class="close_popup">×</button>
+    </div>
+</div>
 </head>
 
 <body <?php body_class(); ?>>
