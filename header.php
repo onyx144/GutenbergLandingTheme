@@ -10,6 +10,7 @@
 
 // Получаем массив сохраненных опций хедера
 $header_options = get_option( 'template_theme_header_options' );
+$post_id = get_the_ID();
 
 // Устанавливаем значения по умолчанию, если опции еще не сохранены или отсутствуют
 $show_language_switcher = $header_options['show_language_switcher'] ?? '0'; // '0' или '1'
@@ -18,6 +19,12 @@ $login_button_text      = $header_options['login_button_text'] ?? __( 'Вход'
 $login_button_url       = $header_options['login_button_url'] ?? wp_login_url(); // URL по умолчанию - страница входа WP
 $register_button_text   = $header_options['register_button_text'] ?? __( 'Регистрация', 'template_theme' );
 $register_button_url    = $header_options['register_button_url'] ?? wp_registration_url(); // URL по умолчанию - страница регистрации WP (если разрешена)
+$banner_mobile = get_post_meta($post_id, 'banner_mobile', true);
+$banner_desktop = get_post_meta($post_id, 'banner_desktop', true);
+$banner_title = get_post_meta($post_id, 'banner_title', true);
+$banner_text = get_post_meta($post_id, 'banner_text', true);
+$button_text = get_post_meta($post_id, 'button_text', true);
+$button_url = get_post_meta($post_id, 'button_url', true);
 $options = get_option('custom_blocks_options');
 $popup = isset($options['popup']) ? $options['popup'] : array();
 ?>
@@ -236,6 +243,52 @@ $popup = isset($options['popup']) ? $options['popup'] : array();
             
         </nav>
     </header>
-
+    <?php
+    if (function_exists('yoast_breadcrumb')) {
+        yoast_breadcrumb('<div class="breadcrumbs">', '</div>');
+    } else {
+        // Альтернативная реализация хлебных крошек, если Yoast SEO не установлен
+        echo '<div class="breadcrumbs">';
+        echo '<a href="' . esc_url(home_url()) . '">Главная</a>';
+        
+        if (is_single() || is_page()) {
+            echo ' &raquo; ';
+            the_title();
+        } elseif (is_category()) {
+            echo ' &raquo; ';
+            single_cat_title();
+        } elseif (is_search()) {
+            echo ' &raquo; Результаты поиска для: "' . get_search_query() . '"';
+        }
+        echo '</div>';
+    }
+    if ($banner_mobile || $banner_desktop) :
+    // Определяем какое изображение использовать (мобильное/десктопное)
+    $banner_image = wp_is_mobile() ? $banner_mobile : $banner_desktop;
+    // Если для текущего устройства нет изображения - используем другое
+    if (empty($banner_image)) $banner_image = wp_is_mobile() ? $banner_desktop : $banner_mobile;
+    ?>
+    <div class="custom-banner">
+        <img src="<?php echo esc_url($banner_image); ?>" alt="<?php echo esc_attr($banner_title ?: 'Баннер'); ?>" class="banner-image">
+        
+        <?php if ($banner_title || $banner_text || ($button_text && $button_url)) : ?>
+            <div class="banner-content">
+                <?php if ($banner_title) : ?>
+                    <h2 class="banner-title"><?php echo esc_html($banner_title); ?></h2>
+                <?php endif; ?>
+                
+                <?php if ($banner_text) : ?>
+                    <p class="banner-text"><?php echo esc_html($banner_text); ?></p>
+                <?php endif; ?>
+                
+                <?php if ($button_text && $button_url) : ?>
+                    <a href="<?php echo esc_url($button_url); ?>" class="banner-button">
+                        <?php echo esc_html($button_text); ?>
+                    </a>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+        <?php endif; ?>
+    </div>
     <div id="content" class="site-content">
         <?php // Основной контент страницы начнется здесь ?>

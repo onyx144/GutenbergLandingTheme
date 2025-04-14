@@ -503,5 +503,6 @@ function template_theme_save_banner_meta_box($post_id) {
 }
 add_action('save_post', 'template_theme_save_banner_meta_box');
 
-?>
-<?php // В конце файла functions.php НЕ рекомендуется ставить закрывающий тег ?>
+/**
+ * Вывод баннера после хедера
+ */
