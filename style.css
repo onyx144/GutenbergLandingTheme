@@ -19,7 +19,9 @@ Tags: one-column, custom-colors, custom-menu, custom-logo, editor-style, feature
  * https://github.com/WordPress/gutenberg/issues/42319
  */
  body {
+    overflow-x: hidden;
     background-color: 0;
+    max-width: 100%;
  }
  a {
 	text-decoration-thickness: 1px !important;
@@ -427,7 +429,23 @@ div#template-theme-popup {
     background: #E5EFEF;
     height: 100%;
 }
+.footer-icons img {
+    width: 30px;
+    height: auto;
+    margin: 5px;
+}
 
+.footer-icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+footer#colophon {
+    text-align: center;
+    margin: auto;
+    padding: 10px 0px;
+}
 .flex.right {
     padding: 20px;
 }
@@ -447,7 +465,6 @@ div#template-theme-popup {
         max-height: 0; /* Изначально скрываем меню */
         left: 0;
         top: 14%;
-        border-top: 1px solid;
         overflow: hidden; /* Скрываем все, что выходит за пределы max-height */
         transition: max-height 0.3s ease-out; /* Добавляем плавную анимацию */
     }
@@ -499,7 +516,7 @@ div#template-theme-popup {
         font-size: 1rem;
     }
     .language-dropdown {
-        margin-bottom: 9px;
+        margin-bottom: 8px;
     }
     section.error-404.not-found {
         height: auto;

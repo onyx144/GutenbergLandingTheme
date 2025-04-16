@@ -113,6 +113,7 @@ require get_template_directory() . '/inc/admin/page-option-api.php';
 require get_template_directory() . '/inc/admin/pop-up.php';
 require get_template_directory() . '/inc/admin/style-register.php';
 require get_template_directory() . '/inc/admin/translate-meta-fields.php';
+require get_template_directory() . '/inc/admin/footer-meta-fields.php';
 
 require_once( get_template_directory() . '/inc/admin/functions-admin.php' );
 require_once( get_template_directory() . '/inc/admin/function-tos.php' );
@@ -286,7 +287,7 @@ function template_theme_render_settings_page() {
 			elseif ( $active_tab == 'page_option' ) {
                 $settings_file = $settings_dir . 'page-option.php';
 			}elseif ( $active_tab == 'footer' ) {
-                $settings_file = $settings_dir . 'footer-settings.php';
+                $settings_file = $settings_dir . 'footer-settings-page.php';
             } 
             elseif ( $active_tab == 'translate' ) {
                 $settings_file = $settings_dir . 'translate-settings-page.php';
@@ -351,11 +352,11 @@ function template_theme_render_banner_meta_box($post) {
     $button_text = get_post_meta($post->ID, 'button_text', true);
     $button_url = get_post_meta($post->ID, 'button_url', true);
     $icon1 = get_post_meta($post->ID, 'icon1', true);
-    $text1 = get_post_meta($post->ID, 'text1', true);
+    $link1 = get_post_meta($post->ID, 'link1', true);
     $icon2 = get_post_meta($post->ID, 'icon2', true);
-    $text2 = get_post_meta($post->ID, 'text2', true);
+    $link2 = get_post_meta($post->ID, 'link2', true);
     $icon3 = get_post_meta($post->ID, 'icon3', true);
-    $text3 = get_post_meta($post->ID, 'text3', true);
+    $link3 = get_post_meta($post->ID, 'link3', true);
 
     // Выводим поля для ввода
     ?>
@@ -382,20 +383,7 @@ function template_theme_render_banner_meta_box($post) {
         <input type="text" id="banner_title" name="banner_title" value="<?php echo esc_attr($banner_title); ?>" class="widefat">
     </p>
 
-    <p>
-        <label for="banner_text">Текст:</label><br>
-        <textarea id="banner_text" name="banner_text" class="widefat"><?php echo esc_textarea($banner_text); ?></textarea>
-    </p>
-
-    <p>
-        <label for="button_text">Текст кнопки:</label><br>
-        <input type="text" id="button_text" name="button_text" value="<?php echo esc_attr($button_text); ?>" class="widefat">
-    </p>
-
-    <p>
-        <label for="button_url">URL кнопки:</label><br>
-        <input type="url" id="button_url" name="button_url" value="<?php echo esc_attr($button_url); ?>" class="widefat">
-    </p>
+    
 
     <p>
         <label for="icon1">Иконка 1:</label><br>
@@ -407,7 +395,7 @@ function template_theme_render_banner_meta_box($post) {
     </p>
 
     <p>
-        <label for="text1">Текст 1:</label><br>
+        <label for="text1">Ссылка 1:</label><br>
         <input type="text" id="text1" name="text1" value="<?php echo esc_attr($text1); ?>" class="widefat">
     </p>
 
@@ -421,7 +409,7 @@ function template_theme_render_banner_meta_box($post) {
     </p>
 
     <p>
-        <label for="text2">Текст 2:</label><br>
+        <label for="text2">Ссылка 2:</label><br>
         <input type="text" id="text2" name="text2" value="<?php echo esc_attr($text2); ?>" class="widefat">
     </p>
 
@@ -435,7 +423,7 @@ function template_theme_render_banner_meta_box($post) {
     </p>
 
     <p>
-        <label for="text3">Текст 3:</label><br>
+        <label for="text3">Ссылка 3:</label><br>
         <input type="text" id="text3" name="text3" value="<?php echo esc_attr($text3); ?>" class="widefat">
     </p>
 

@@ -71,20 +71,48 @@ if ($popup_options) {
 	</div><?php // Закрываем div#content, открытый в header.php ?>
 
 	<footer id="colophon" class="site-footer">
-		<div class="site-info">
-			<a href="<?php echo esc_url( __( 'https://wordpress.org/', 'template_theme' ) ); ?>">
-				<?php
-				/* translators: %s: CMS name, i.e. WordPress. */
-				printf( esc_html__( 'Proudly powered by %s', 'template_theme' ), 'WordPress' );
-				?>
-			</a>
-			<span class="sep"> | </span>
-				<?php
-				/* translators: 1: Theme name, 2: Theme author. */
-				printf( esc_html__( 'Theme: %1$s by %2$s.', 'template_theme' ), 'template_theme', '<a href="https://example.com/">Your Name or Company</a>' ); // Замените ссылку и имя автора
-				?>
-                <p>&copy; <?php echo date('Y'); // Выводим текущий год ?> <?php bloginfo('name'); // Выводим название сайта ?>. Все права защищены.</p>
-		</div></footer></div><?php // Закрываем div#page, открытый в header.php ?>
+    <?php
+			$footer_options = get_option('template_theme_footer_options');
+
+			// Вывод иконок со ссылками
+				echo '<div class="footer-icons">';
+                if ($footer_options ) :
+				for ($i = 1; $i <= 4; $i++) :
+					$icon_url = isset($footer_options['footer_icon_' . $i]) ? esc_url($footer_options['footer_icon_' . $i]) : '';
+					$link_url = isset($footer_options['footer_link_' . $i]) ? esc_url($footer_options['footer_link_' . $i]) : '';
+
+					if ($icon_url && $link_url) :
+						echo '<a href="' . $link_url . '" target="_blank" rel="noopener noreferrer">';
+						echo '<img src="' . $icon_url . '" alt="' . sprintf(esc_attr__('Иконка %d', 'template_theme'), $i) . '">';
+						echo '</a>';
+					elseif ($icon_url) :
+						echo '<img src="' . $icon_url . '" alt="' . sprintf(esc_attr__('Иконка %d', 'template_theme'), $i) . '">';
+					endif;
+				endfor;
+                for ($i = 1; $i <= 3; $i++) :
+                    $page_icon = get_post_meta(get_the_ID(), 'icon' . $i, true);
+                    $page_link = get_post_meta(get_the_ID(), 'link' . $i, true);
+    
+                    if ($page_icon && $page_link) :
+                        echo '<a href="' . esc_url($page_link) . '" target="_blank" rel="noopener noreferrer">';
+                        echo '<img src="' . esc_url($page_icon) . '" alt="' . sprintf(esc_attr__('Иконка %d для этой страницы', 'template_theme'), $i) . '">';
+                        echo '</a>';
+                    elseif ($page_icon) :
+                        echo '<img src="' . esc_url($page_icon) . '" alt="' . sprintf(esc_attr__('Иконка %d для этой страницы', 'template_theme'), $i) . '">';
+                    endif;
+                endfor;
+				echo '</div>';
+			endif;
+
+			// Вывод текста копирайта
+			$copyright_text = isset($footer_options['footer_copyright_text']) ? wp_kses_post($footer_options['footer_copyright_text']) : '';
+			if ($copyright_text) :
+				echo '<div class="site-info">';
+				echo $copyright_text;
+				echo '</div>';
+			endif;
+			?>
+    </footer></div><?php // Закрываем div#page, открытый в header.php ?>
 
 <?php wp_footer(); // Важнейший хук! WordPress и плагины используют его для добавления скриптов и прочего перед закрытием </body> ?>
 
