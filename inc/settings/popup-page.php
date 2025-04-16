@@ -18,7 +18,7 @@ $current_lang_tab = isset($_GET['lang']) ? sanitize_key($_GET['lang']) : 'uk'; /
 <div class="popup-settings-tabs">
     <h2 class="nav-tab-wrapper">
         <?php foreach ($languages as $lang => $lang_name) : ?>
-            <a href="#<?php echo esc_attr($lang); ?>" class="nav-tab <?php if ($lang === $current_lang_tab) echo 'nav-tab-active'; ?>" data-lang="<?php echo esc_attr($lang); ?>">
+            <a href="#<?php echo esc_attr($lang); ?>" class="nav-tab language-tab-link <?php if ($lang === $current_lang_tab) echo 'nav-tab-active'; ?>" data-lang="<?php echo esc_attr($lang); ?>">
                 <?php echo esc_html($lang_name); ?>
             </a>
         <?php endforeach; ?>
@@ -94,13 +94,13 @@ $current_lang_tab = isset($_GET['lang']) ? sanitize_key($_GET['lang']) : 'uk'; /
 
 <script>
 jQuery(document).ready(function($) {
-    // Обработчик клика по вкладкам языка
-    $('.nav-tab-wrapper a').click(function(e) {
+    // Обработчик клика ТОЛЬКО по ссылкам с классом 'language-tab-link'
+    $('.nav-tab-wrapper a.language-tab-link').click(function(e) {
         e.preventDefault();
         var lang = $(this).data('lang');
 
         // Деактивируем все вкладки и скрываем все содержимое
-        $('.nav-tab-wrapper a').removeClass('nav-tab-active');
+        $('.nav-tab-wrapper a.language-tab-link').removeClass('nav-tab-active');
         $('.lang-tab-content').hide();
 
         // Активируем текущую вкладку и показываем соответствующее содержимое

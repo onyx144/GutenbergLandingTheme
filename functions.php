@@ -112,6 +112,7 @@ require get_template_directory() . '/inc/admin/header-settings-api.php';
 require get_template_directory() . '/inc/admin/page-option-api.php';
 require get_template_directory() . '/inc/admin/pop-up.php';
 require get_template_directory() . '/inc/admin/style-register.php';
+require get_template_directory() . '/inc/admin/translate-meta-fields.php';
 
 require_once( get_template_directory() . '/inc/admin/functions-admin.php' );
 require_once( get_template_directory() . '/inc/admin/function-tos.php' );
@@ -243,10 +244,10 @@ function template_theme_render_settings_page() {
                 <?php esc_html_e( 'Page Option', 'template_theme' ); ?>
             </a>
             <a href="?page=template_theme_settings&tab=footer" class="nav-tab <?php echo $active_tab == 'footer' ? 'nav-tab-active' : ''; ?>">
-                <?php esc_html_e( 'Футер', 'template_theme' ); ?>
+                <?php esc_html_e( 'Footer', 'template_theme' ); ?>
             </a>
-            <a href="?page=template_theme_settings&tab=banner" class="nav-tab <?php echo $active_tab == 'banner' ? 'nav-tab-active' : ''; ?>">
-                <?php esc_html_e( 'Банер', 'template_theme' ); ?>
+            <a href="?page=template_theme_settings&tab=translate" class="nav-tab <?php echo $active_tab == 'translate' ? 'nav-tab-active' : ''; ?>">
+                <?php esc_html_e( 'Translate', 'template_theme' ); ?>
             </a>
             <a href="?page=template_theme_settings&tab=style" class="nav-tab <?php echo $active_tab == 'style' ? 'nav-tab-active' : ''; ?>">
               <?php esc_html_e( 'Style', 'template_theme' ); ?>
@@ -286,8 +287,9 @@ function template_theme_render_settings_page() {
                 $settings_file = $settings_dir . 'page-option.php';
 			}elseif ( $active_tab == 'footer' ) {
                 $settings_file = $settings_dir . 'footer-settings.php';
-            } elseif ( $active_tab == 'banner' ) {
-                $settings_file = $settings_dir . 'banner-settings.php';
+            } 
+            elseif ( $active_tab == 'translate' ) {
+                $settings_file = $settings_dir . 'translate-settings-page.php';
             } 
             elseif ( $active_tab == 'popup' ) {
                 $settings_file = $settings_dir . 'popup-page.php';

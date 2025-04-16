@@ -75,59 +75,8 @@ function template_theme_settings_init() {
         ]
     );
 
-    add_settings_field(
-        'login_button_text',
-        __( 'Текст кнопки "Вход"', 'template_theme' ),
-        'template_theme_render_field_text',
-        'template_theme_settings',
-        'template_theme_header_auth_buttons_section',
-        [
-            'option_name' => 'template_theme_header_options',
-            'field_id'    => 'login_button_text',
-            'label_for'   => 'login_button_text',
-            'default'     => __( 'Вход', 'template_theme' )
-        ]
-    );
-
-    add_settings_field(
-        'login_button_url',
-        __( 'URL кнопки "Вход"', 'template_theme' ),
-        'template_theme_render_field_url',
-        'template_theme_settings',
-        'template_theme_header_auth_buttons_section',
-        [
-            'option_name' => 'template_theme_header_options',
-            'field_id'    => 'login_button_url',
-            'label_for'   => 'login_button_url'
-        ]
-    );
-
-     add_settings_field(
-        'register_button_text',
-        __( 'Текст кнопки "Регистрация"', 'template_theme' ),
-        'template_theme_render_field_text',
-        'template_theme_settings',
-        'template_theme_header_auth_buttons_section',
-        [
-            'option_name' => 'template_theme_header_options',
-            'field_id'    => 'register_button_text',
-            'label_for'   => 'register_button_text',
-            'default'     => __( 'Регистрация', 'template_theme' )
-        ]
-    );
-
-    add_settings_field(
-        'register_button_url',
-        __( 'URL кнопки "Регистрация"', 'template_theme' ),
-        'template_theme_render_field_url',
-        'template_theme_settings',
-        'template_theme_header_auth_buttons_section',
-        [
-            'option_name' => 'template_theme_header_options',
-            'field_id'    => 'register_button_url',
-            'label_for'   => 'register_button_url'
-        ]
-    );
+    
+    
 }
 // Регистрируем функцию на хук admin_init
 add_action( 'admin_init', 'template_theme_settings_init' );

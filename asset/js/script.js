@@ -9,3 +9,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+jQuery(document).ready(function($) {
+    $('.language-dropdown .current-lang-button').on('click', function() {
+        $('.language-dropdown .lang-dropdown-list').toggleClass('show');
+    });
+
+    // Закрывать выпадающий список при клике вне его
+    $(document).on('click', function(event) {
+        if (!$(event.target).closest('.language-dropdown').length) {
+            $('.language-dropdown .lang-dropdown-list').removeClass('show');
+        }
+    });
+});

@@ -25,6 +25,65 @@ Tags: one-column, custom-colors, custom-menu, custom-logo, editor-style, feature
 	text-decoration-thickness: 1px !important;
 	text-underline-offset: .1em;
 }
+section.error-404.not-found {
+    height: 110vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.page-content {
+
+    text-align: center;
+}
+.home-link {
+    margin: auto;
+    display: flex;
+    justify-content: center;
+}
+.header-language-switcher {
+    /* Расположение */
+    /* position: absolute;
+    top: 10px;
+    right: 20px; */
+    z-index: 100; /* Чтобы переключатель был над другими элементами */
+}
+
+.header-language-switcher ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+}
+
+.header-language-switcher li {
+    margin-left: 10px;
+}
+
+.header-language-switcher li:first-child {
+    margin-left: 0;
+}
+
+.header-language-switcher a {
+    display: block;
+    padding: 5px;
+    text-decoration: none;
+    /* Добавьте свои стили для ссылок */
+}
+
+.header-language-switcher img {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+/* Стили для выпадающего списка Polylang (если используется) */
+.header-language-switcher .polylang-dropdown {
+    /* Стили для выпадающего контейнера */
+}
+
+.header-language-switcher .polylang-dropdown select {
+    /* Стили для элемента select */
+}
 
 /* Focus styles */
 :where(.wp-site-blocks *:focus) {
@@ -54,7 +113,71 @@ Tags: one-column, custom-colors, custom-menu, custom-logo, editor-style, feature
 h1, h2, h3, h4, h5, h6, blockquote, caption, figcaption, p {
 	text-wrap: pretty;
 }
+.header-language-switcher {
+    z-index: 100;
+}
 
+.language-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-bottom: -7px;
+}
+
+.current-lang-button {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 5px 10px;
+    font: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.current-lang-button:focus {
+    outline: none;
+}
+
+.current-lang-button img {
+    vertical-align: middle;
+    margin-right: 5px;
+}
+
+.language-dropdown .lang-dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: -2px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    min-width: 100%;
+    display: none; /* Скрыт по умолчанию */
+}
+
+.language-dropdown .lang-dropdown-list.show {
+    display: block;
+}
+
+.language-dropdown .lang-dropdown-list li a {
+    display: block;
+    padding: 5px 10px;
+    text-decoration: none;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.language-dropdown .lang-dropdown-list li a:hover {
+    background-color: #f0f0f0;
+}
+
+.language-dropdown .lang-dropdown-list li a img {
+    vertical-align: middle;
+    /* margin-right: 5px; */
+}
 /*
  * Change the position of the more block on the front, by making it a block level element.
  * https://github.com/WordPress/gutenberg/issues/65934
@@ -134,7 +257,9 @@ div#template-theme-popup img {
     display: flex;
     align-items: center;
 }
-
+div#template-theme-popup {
+    z-index: 99;
+}
 .auth-buttons a.button {
     background-color: #007bff; /* Цвет фона кнопок */
     color: white; /* Цвет текста кнопок */
@@ -162,9 +287,6 @@ div#template-theme-popup img {
     display: flex;
 }
 
-.main-navigation li {
-    margin-left: 20px; /* Отступ между пунктами меню */
-}
 
 .main-navigation a {
     color: #333; /* Цвет текста пунктов меню */
@@ -236,6 +358,7 @@ div#template-theme-popup img {
     background-position: center;
     padding: 60px 20px;
     text-align: center;
+    z-index: 1;
     color: #fff;
 }
 
@@ -320,9 +443,10 @@ div#template-theme-popup img {
     #primary-menu {
         /* ... (ваши предыдущие стили) ... */
         position: absolute;
+        z-index: 9;
         max-height: 0; /* Изначально скрываем меню */
         left: 0;
-        top: 95px;
+        top: 14%;
         border-top: 1px solid;
         overflow: hidden; /* Скрываем все, что выходит за пределы max-height */
         transition: max-height 0.3s ease-out; /* Добавляем плавную анимацию */
@@ -373,5 +497,11 @@ div#template-theme-popup img {
     
     .banner-text {
         font-size: 1rem;
+    }
+    .language-dropdown {
+        margin-bottom: 9px;
+    }
+    section.error-404.not-found {
+        height: auto;
     }
 }

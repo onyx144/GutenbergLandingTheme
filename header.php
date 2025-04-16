@@ -19,12 +19,27 @@ $login_button_text      = $header_options['login_button_text'] ?? __( 'Вход'
 $login_button_url       = $header_options['login_button_url'] ?? wp_login_url(); // URL по умолчанию - страница входа WP
 $register_button_text   = $header_options['register_button_text'] ?? __( 'Регистрация', 'template_theme' );
 $register_button_url    = $header_options['register_button_url'] ?? wp_registration_url(); // URL по умолчанию - страница регистрации WP (если разрешена)
-$banner_mobile = get_post_meta($post_id, 'banner_mobile', true);
-$banner_desktop = get_post_meta($post_id, 'banner_desktop', true);
+$banner_mobile_local = get_post_meta($post_id, 'banner_mobile', true);
+$banner_desktop_local = get_post_meta($post_id, 'banner_desktop', true);
 $banner_title = get_post_meta($post_id, 'banner_title', true);
 $banner_text = get_post_meta($post_id, 'banner_text', true);
 $button_text = get_post_meta($post_id, 'button_text', true);
 $button_url = get_post_meta($post_id, 'button_url', true);
+$banner_options_global = get_option('template_theme_banner_options');
+$banner_mobile_global = isset($banner_options_global['banner_mobile']) ? $banner_options_global['banner_mobile'] : '';
+$banner_desktop_global = isset($banner_options_global['banner_desktop']) ? $banner_options_global['banner_desktop'] : '';
+$banner_title_global = isset($banner_options_global['banner_title']) ? $banner_options_global['banner_title'] : '';
+$banner_text_global = isset($banner_options_global['banner_text']) ? $banner_options_global['banner_text'] : '';
+$button_text_global = isset($banner_options_global['button_text']) ? $banner_options_global['button_text'] : '';
+$button_url_global = isset($banner_options_global['button_url']) ? $banner_options_global['button_url'] : '';
+$show_banner_main_page = isset($banner_options_global['show_banner_main_page']) ? (bool) $banner_options_global['show_banner_main_page'] : false;
+$show_banner_pages = isset($banner_options_global['show_banner_pages']) ? (bool) $banner_options_global['show_banner_pages'] : false;
+$show_banner_categories = isset($banner_options_global['show_banner_categories']) ? (bool) $banner_options_global['show_banner_categories'] : false;
+
+// Определяем, нужно ли выводить баннер и какие данные использовать
+$show_banner = false;
+$banner_image = '';
+
 $options = get_option('custom_blocks_options');
 $popup = isset($options['popup']) ? $options['popup'] : array();
 ?>
@@ -157,17 +172,8 @@ $popup = isset($options['popup']) ? $options['popup'] : array();
         <?php // --- Область для переключателя языка и кнопок --- ?>
         <div class="header-controls">
 
-            <?php // --- Переключатель языка ---
-            if ( $show_language_switcher === '1' ) : ?>
-                <div class="language-switcher-area">
-                    <?php
-                    // Здесь нужно вставить код или хук вашего плагина для переключения языков.
-                    // Например, для WPML это может быть: do_action('wpml_add_language_selector');
-                    // Или для Polylang: if ( function_exists('pll_the_languages') ) { pll_the_languages( array( 'dropdown' => 1 ) ); }
-                    // Пока оставим комментарий-заглушку:
-                    echo '';
-                    ?>
-                </div><?php endif; ?>
+           
+
 
 
             <?php // --- Кнопки Вход/Регистрация ---
@@ -215,19 +221,42 @@ $popup = isset($options['popup']) ? $options['popup'] : array();
                 // Получаем опции хедера
                 $header_options = get_option( 'template_theme_header_options' );
                 $show_auth_buttons = $header_options['show_auth_buttons'] ?? '0';
-                $login_button_text = $header_options['login_button_text'] ?? __( 'Вход', 'template_theme' );
-                $login_button_url = $header_options['login_button_url'] ?? wp_login_url();
-                $register_button_text = $header_options['register_button_text'] ?? __( 'Регистрация', 'template_theme' );
-                $register_button_url = $header_options['register_button_url'] ?? wp_registration_url();
             
-                if ( $show_auth_buttons === '1' && $args->theme_location === 'primary' ) {
+                if ( $show_auth_buttons === '1') {
                     if ( ! is_user_logged_in() ) {
-                        $login_button = '<li class="menu-item menu-item-button"><a href="' . esc_url( $login_button_url ) . '" class="button button-login">' . esc_html( $login_button_text ) . '</a></li>';
-                        $register_button = '';
-                            $register_button = '<li class="menu-item menu-item-button"><a href="' . esc_url( $register_button_url ) . '" class="button button-register">' . esc_html( $register_button_text ) . '</a></li>';
-                        
-                        $items .= $login_button . $register_button;
-                    } 
+                        $current_lang = function_exists('pll_current_language') ? pll_current_language() : 'uk';
+                        $prefix = 'translate_';
+            
+                        // Получаем опции переводов
+                        $translate_options = get_option('template_theme_translate_options');
+            
+                        // Получаем текст и ссылку для кнопки "Войти" из опций
+                        $login_button_text_key = 'button_login_' . $current_lang;
+                        $login_button_link_key = 'button_login_link_' . $current_lang;
+            
+                        $login_button_text = $translate_options[$login_button_text_key] ?? '';
+                        $login_button_url = $translate_options[$login_button_link_key] ?? '';
+            
+                        // Получаем текст и ссылку для кнопки "Регистрация" из опций
+                        $register_button_text_key = 'button_registration_' . $current_lang;
+                        $register_button_link_key = 'button_registration_link_' . $current_lang;
+            
+                        $register_button_text = $translate_options[$register_button_text_key] ?? '';
+                        $register_button_url = $translate_options[$register_button_link_key] ?? '';
+            
+                        $login_button_output = '';
+                        $register_button_output = '';
+            
+                        if ( ! empty( $login_button_text ) && ! empty( $login_button_url ) ) {
+                            $login_button_output = '<li class="menu-item menu-item-button"><a href="' . esc_url( $login_button_url ) . '" class="button button-login">' . esc_html( $login_button_text ) . '</a></li>';
+                        }
+            
+                        if ( ! empty( $register_button_text ) && ! empty( $register_button_url ) ) {
+                            $register_button_output = '<li class="menu-item menu-item-button"><a href="' . esc_url( $register_button_url ) . '" class="button button-register">' . esc_html( $register_button_text ) . '</a></li>';
+                        }
+            
+                        $items .= $login_button_output . $register_button_output;
+                    }
                 }
                 return $items;
             }
@@ -240,7 +269,39 @@ $popup = isset($options['popup']) ? $options['popup'] : array();
                 )
             );
             ?>
-            
+             <?php // --- Переключатель языка ---
+            if ( $show_language_switcher === '1' ) : ?>
+                <?php
+        if (function_exists('wpml_language_switcher')) {
+            wpml_language_switcher();
+        } elseif (function_exists('pll_the_languages')) {
+            $languages = pll_the_languages(['raw' => 1]);
+            if (!empty($languages) && count($languages) > 1) :
+                $current_lang = pll_current_language();
+                $current_lang_data = $languages[$current_lang];
+                ?>
+                <div class="language-dropdown">
+                    <button class="current-lang-button">
+                        <img src="<?php echo esc_url($current_lang_data['flag']); ?>" alt="<?php echo esc_attr($current_lang_data['name']); ?>" width="16" height="11" style="width: 16px; height: 11px;">
+                    </button>
+                    <ul class="lang-dropdown-list">
+                        <?php foreach ($languages as $lang_code => $lang_data) : ?>
+                            <?php if ($lang_code !== $current_lang) : ?>
+                                <li class="lang-item lang-item-<?php echo esc_attr($lang_data['id']); ?> lang-item-<?php echo esc_attr($lang_code); ?>">
+                                    <a lang="<?php echo esc_attr($lang_data['locale']); ?>" hreflang="<?php echo esc_attr($lang_data['locale']); ?>" href="<?php echo esc_url($lang_data['url']); ?>">
+                                        <img src="<?php echo esc_url($lang_data['flag']); ?>" alt="<?php echo esc_attr($lang_data['name']); ?>" width="16" height="11" style="width: 16px; height: 11px;">
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <?php
+            endif;
+        } else {
+            esc_html_e('Для отображения переключателя языка установите и активируйте WPML или Polylang.', 'template_theme');
+        }
+        ?><?php endif; ?>
         </nav>
     </header>
     <?php
@@ -262,33 +323,53 @@ $popup = isset($options['popup']) ? $options['popup'] : array();
         }
         echo '</div>';
     }
-    if ($banner_mobile || $banner_desktop) :
-    // Определяем какое изображение использовать (мобильное/десктопное)
-    $banner_image = wp_is_mobile() ? $banner_mobile : $banner_desktop;
-    // Если для текущего устройства нет изображения - используем другое
-    if (empty($banner_image)) $banner_image = wp_is_mobile() ? $banner_desktop : $banner_mobile;
+    if ($banner_mobile_local || $banner_desktop_local) {
+        // Определяем какое изображение использовать (мобильное/десктопное)
+        $banner_image = wp_is_mobile() ? $banner_mobile_local : $banner_desktop_local;
+        // Если для текущего устройства нет изображения - используем другое
+        if (empty($banner_image)) $banner_image = wp_is_mobile() ? $banner_desktop : $banner_mobile;
+        if (!is_404()) {
+            $show_banner = true;
+          }
+    }
+    elseif ($banner_mobile_global || $banner_desktop_global) {
+        // Если локальных нет, но есть глобальные
+        $banner_image = wp_is_mobile() ? $banner_mobile_global : $banner_desktop_global;
+        if (empty($banner_image)) $banner_image = wp_is_mobile() ? $banner_desktop_global : $banner_mobile_global;
+        if($show_banner_pages )
+        $show_banner = true;
+        elseif ((is_front_page() && $show_banner_main_page) || (is_category() && $show_banner_categories))
+        if (!is_404()) {
+          $show_banner = true;
+        }
+    }
+    if ($show_banner) :
+        ?>
+        <div class="custom-banner">
+            <img src="<?php echo esc_url($banner_image); ?>" alt="<?php echo esc_attr($banner_title ?: 'Баннер'); ?>" class="banner-image">
+    
+            <?php if ($banner_title || $banner_text || ($button_text && $button_url)) : ?>
+                <div class="banner-content">
+                    <?php if ($banner_title) : ?>
+                        <h2 class="banner-title"><?php echo esc_html($banner_title); ?></h2>
+                    <?php endif; ?>
+    
+                    <?php if ($banner_text) : ?>
+                        <p class="banner-text"><?php echo esc_html($banner_text); ?></p>
+                    <?php endif; ?>
+    
+                    <?php if ($button_text && $button_url) : ?>
+                        <a href="<?php echo esc_url($button_url); ?>" class="banner-button">
+                            <?php echo esc_html($button_text); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+    
+        </div>
+        <?php
+    endif;
     ?>
-    <div class="custom-banner">
-        <img src="<?php echo esc_url($banner_image); ?>" alt="<?php echo esc_attr($banner_title ?: 'Баннер'); ?>" class="banner-image">
-        
-        <?php if ($banner_title || $banner_text || ($button_text && $button_url)) : ?>
-            <div class="banner-content">
-                <?php if ($banner_title) : ?>
-                    <h2 class="banner-title"><?php echo esc_html($banner_title); ?></h2>
-                <?php endif; ?>
-                
-                <?php if ($banner_text) : ?>
-                    <p class="banner-text"><?php echo esc_html($banner_text); ?></p>
-                <?php endif; ?>
-                
-                <?php if ($button_text && $button_url) : ?>
-                    <a href="<?php echo esc_url($button_url); ?>" class="banner-button">
-                        <?php echo esc_html($button_text); ?>
-                    </a>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
-        <?php endif; ?>
-    </div>
+
     <div id="content" class="site-content">
         <?php // Основной контент страницы начнется здесь ?>
