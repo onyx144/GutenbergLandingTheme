@@ -1,6 +1,6 @@
 <?php
 /**
- * Содержимое вкладки "Pop-up" с использованием Settings API.
+ * Содержимое вкладки "Pop-up" с использованием Settings API и переключателем языков (без перезагрузки).
  */
 if (!defined('ABSPATH')) {
     exit;
@@ -11,64 +11,104 @@ if (!current_user_can('manage_options')) {
 
 $options = get_option('template_theme_popup_options');
 $popup = isset($options) ? $options : array();
+$languages = ['uk' => 'Українська', 'en' => 'English', 'es' => 'Español'];
+$current_lang_tab = isset($_GET['lang']) ? sanitize_key($_GET['lang']) : 'uk'; // Сохраняем для активности вкладки при первой загрузке
 ?>
 
-<form method="post" action="options.php">
-    <?php
-    settings_fields('template_theme_popup_settings_group');
-    //do_settings_sections('popup_settings');
-    ?>
+<div class="popup-settings-tabs">
+    <h2 class="nav-tab-wrapper">
+        <?php foreach ($languages as $lang => $lang_name) : ?>
+            <a href="#<?php echo esc_attr($lang); ?>" class="nav-tab <?php if ($lang === $current_lang_tab) echo 'nav-tab-active'; ?>" data-lang="<?php echo esc_attr($lang); ?>">
+                <?php echo esc_html($lang_name); ?>
+            </a>
+        <?php endforeach; ?>
+    </h2>
 
-    <h2><?php esc_html_e('Настройки Pop-up', 'template_theme'); ?></h2>
+    <form method="post" action="options.php">
+        <?php
+        settings_fields('template_theme_popup_settings_group');
+        ?>
 
-    <label for="template_theme_popup_options[popup_image]">
-        <?php esc_html_e('Изображение:', 'template_theme'); ?>
-    </label>
-    <input type="text" name="template_theme_popup_options[popup_image]" value="<?php echo esc_attr(isset($popup['popup_image']) ? $popup['popup_image'] : ''); ?>" class="widefat">
-    <button type="button" class="upload_image_button button button-primary" data-target="template_theme_popup_options[popup_image]">Загрузить изображение</button>
-    <?php if (isset($popup['popup_image']) && $popup['popup_image']): ?>
-        <img src="<?php echo esc_url($popup['popup_image']); ?>" alt="Pop-up Image" style="max-width: 100px;">
-    <?php endif; ?>
-    <label for="template_theme_popup_options[popup_title]">
-        <?php esc_html_e('Заголовок:', 'template_theme'); ?>
-    </label>
-    <input type="text" name="template_theme_popup_options[popup_title]" value="<?php echo esc_attr(isset($popup['popup_title']) ? $popup['popup_title'] : ''); ?>" class="widefat">
+        <?php foreach ($languages as $lang => $lang_name) : ?>
+            <div id="lang-<?php echo esc_attr($lang); ?>" class="lang-tab-content" <?php if ($lang !== $current_lang_tab) echo 'style="display: none;"'; ?>>
+                <h3><?php printf(esc_html__('Настройки Pop-up (%s)', 'template_theme'), $lang_name); ?></h3>
+                <table class="form-table">
+                    <tr valign="top">
+                        <th scope="row"><?php esc_html_e('Изображение:', 'template_theme'); ?></th>
+                        <td>
+                            <input type="text" name="template_theme_popup_options[popup_image_<?php echo esc_attr($lang); ?>]" value="<?php echo esc_attr(isset($popup['popup_image_' . $lang]) ? $popup['popup_image_' . $lang] : ''); ?>" class="widefat">
+                            <button type="button" class="upload_image_button button button-primary" data-target="template_theme_popup_options[popup_image_<?php echo esc_attr($lang); ?>]">Загрузить изображение</button>
+                            <?php if (isset($popup['popup_image_' . $lang]) && $popup['popup_image_' . $lang]): ?>
+                                <img src="<?php echo esc_url($popup['popup_image_' . $lang]); ?>" alt="Pop-up Image (<?php echo esc_attr($lang); ?>)" style="max-width: 100px;">
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><?php esc_html_e('Заголовок:', 'template_theme'); ?></th>
+                        <td>
+                            <input type="text" name="template_theme_popup_options[popup_title_<?php echo esc_attr($lang); ?>]" value="<?php echo esc_attr(isset($popup['popup_title_' . $lang]) ? $popup['popup_title_' . $lang] : ''); ?>" class="widefat">
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><?php esc_html_e('Текст:', 'template_theme'); ?></th>
+                        <td>
+                            <textarea name="template_theme_popup_options[popup_text_<?php echo esc_attr($lang); ?>]" class="widefat"><?php echo esc_textarea(isset($popup['popup_text_' . $lang]) ? $popup['popup_text_' . $lang] : ''); ?></textarea>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><?php esc_html_e('Текст кнопки:', 'template_theme'); ?></th>
+                        <td>
+                            <input type="text" name="template_theme_popup_options[popup_button_text_<?php echo esc_attr($lang); ?>]" value="<?php echo esc_attr(isset($popup['popup_button_text_' . $lang]) ? $popup['popup_button_text_' . $lang] : ''); ?>" class="widefat">
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><?php esc_html_e('Ссылка кнопки:', 'template_theme'); ?></th>
+                        <td>
+                            <input type="text" name="template_theme_popup_options[popup_button_link_<?php echo esc_attr($lang); ?>]" value="<?php echo esc_attr(isset($popup['popup_button_link_' . $lang]) ? $popup['popup_button_link_' . $lang] : ''); ?>" class="widefat">
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><?php esc_html_e('Условие показа:', 'template_theme'); ?></th>
+                        <td>
+                            <select name="template_theme_popup_options[popup_condition_<?php echo esc_attr($lang); ?>]">
+                                <option value="timer" <?php selected(isset($popup['popup_condition_' . $lang]) ? $popup['popup_condition_' . $lang] : '', 'timer'); ?>><?php esc_html_e('Таймер (сек)', 'template_theme'); ?></option>
+                                <option value="scroll" <?php selected(isset($popup['popup_condition_' . $lang]) ? $popup['popup_condition_' . $lang] : '', 'scroll'); ?>><?php esc_html_e('Прокрутка (%)', 'template_theme'); ?></option>
+                                <option value="page_load" <?php selected(isset($popup['popup_condition_' . $lang]) ? $popup['popup_condition_' . $lang] : '', 'page_load'); ?>><?php esc_html_e('При загрузке страницы', 'template_theme'); ?></option>
+                                <option value="wait_time" <?php selected(isset($popup['popup_condition_' . $lang]) ? $popup['popup_condition_' . $lang] : '', 'wait_time'); ?>><?php esc_html_e('Время ожидания (сек)', 'template_theme'); ?></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><?php esc_html_e('Значение условия:', 'template_theme'); ?></th>
+                        <td>
+                            <input type="number" name="template_theme_popup_options[popup_condition_value_<?php echo esc_attr($lang); ?>]" value="<?php echo esc_attr(isset($popup['popup_condition_value_' . $lang]) ? $popup['popup_condition_value_' . $lang] : '5'); ?>" class="small-text">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        <?php endforeach; ?>
 
-    <label for="template_theme_popup_options[popup_text]">
-        <?php esc_html_e('Текст:', 'template_theme'); ?>
-    </label>
-    <textarea name="template_theme_popup_options[popup_text]" class="widefat"><?php echo esc_textarea(isset($popup['popup_text']) ? $popup['popup_text'] : ''); ?></textarea>
-
-    <label for="template_theme_popup_options[popup_button_text]">
-        <?php esc_html_e('Текст кнопки:', 'template_theme'); ?>
-    </label>
-    <input type="text" name="template_theme_popup_options[popup_button_text]" value="<?php echo esc_attr(isset($popup['popup_button_text']) ? $popup['popup_button_text'] : ''); ?>" class="widefat">
-
-    <label for="template_theme_popup_options[popup_button_link]">
-        <?php esc_html_e('Ссылка кнопки:', 'template_theme'); ?>
-    </label>
-    <input type="text" name="template_theme_popup_options[popup_button_link]" value="<?php echo esc_attr(isset($popup['popup_button_link']) ? $popup['popup_button_link'] : ''); ?>" class="widefat">
-
-    <label for="template_theme_popup_options[popup_condition]">
-        <?php esc_html_e('Условие показа:', 'template_theme'); ?>
-    </label>
-    <select name="template_theme_popup_options[popup_condition]">
-        <option value="timer" <?php selected(isset($popup['popup_condition']) ? $popup['popup_condition'] : '', 'timer'); ?>><?php esc_html_e('Таймер (сек)', 'template_theme'); ?></option>
-        <option value="scroll" <?php selected(isset($popup['popup_condition']) ? $popup['popup_condition'] : '', 'scroll'); ?>><?php esc_html_e('Прокрутка (%)', 'template_theme'); ?></option>
-        <option value="page_load" <?php selected(isset($popup['popup_condition']) ? $popup['popup_condition'] : '', 'page_load'); ?>><?php esc_html_e('При загрузке страницы', 'template_theme'); ?></option>
-        <option value="wait_time" <?php selected(isset($popup['popup_condition']) ? $popup['popup_condition'] : '', 'wait_time'); ?>><?php esc_html_e('Время ожидания (сек)', 'template_theme'); ?></option>
-    </select>
-
-    <label for="template_theme_popup_options[popup_condition_value]">
-        <?php esc_html_e('Значение условия:', 'template_theme'); ?>
-    </label>
-    <input type="number" name="template_theme_popup_options[popup_condition_value]" value="<?php echo esc_attr(isset($popup['popup_condition_value']) ? $popup['popup_condition_value'] : '5'); ?>">
-
-    <?php submit_button(__('Сохранить настройки', 'template_theme')); ?>
-</form>
+        <?php submit_button(__('Сохранить настройки', 'template_theme')); ?>
+    </form>
+</div>
 
 <script>
 jQuery(document).ready(function($) {
+    // Обработчик клика по вкладкам языка
+    $('.nav-tab-wrapper a').click(function(e) {
+        e.preventDefault();
+        var lang = $(this).data('lang');
+
+        // Деактивируем все вкладки и скрываем все содержимое
+        $('.nav-tab-wrapper a').removeClass('nav-tab-active');
+        $('.lang-tab-content').hide();
+
+        // Активируем текущую вкладку и показываем соответствующее содержимое
+        $(this).addClass('nav-tab-active');
+        $('#lang-' + lang).show();
+    });
+
+    // Обработчик кнопки загрузки изображения (остается без изменений)
     $(document).on('click', '.upload_image_button', function(e) {
         e.preventDefault();
         var target = $(this).data('target');
@@ -84,3 +124,13 @@ jQuery(document).ready(function($) {
     });
 });
 </script>
+<style>
+    .popup-settings-tabs .nav-tab-wrapper {
+        margin-bottom: 20px;
+    }
+    .popup-settings-tabs .lang-tab-content {
+        border: 1px solid #ccc;
+        padding: 15px;
+        background-color: #fff;
+    }
+</style>

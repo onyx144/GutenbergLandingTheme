@@ -11,14 +11,17 @@
 ?>
 <?php
 $popup_options = get_option('template_theme_popup_options');
+$current_lang = function_exists('pll_current_language') ? pll_current_language() : 'uk';
+$lang_suffix = '_' . $current_lang;
+
 if ($popup_options) {
-    $popup_image = esc_url($popup_options['popup_image']);
-    $popup_title = esc_html($popup_options['popup_title']);
-    $popup_text = esc_html($popup_options['popup_text']);
-    $popup_button_text = esc_html($popup_options['popup_button_text']);
-    $popup_button_link = esc_url($popup_options['popup_button_link']);
-    $popup_condition = esc_attr($popup_options['popup_condition']);
-    $popup_condition_value = intval($popup_options['popup_condition_value']);
+    $popup_image = esc_url(isset($popup_options['popup_image' . $lang_suffix]) ? $popup_options['popup_image' . $lang_suffix] : (isset($popup_options['popup_image_uk']) ? $popup_options['popup_image_uk'] : ''));
+    $popup_title = esc_html(isset($popup_options['popup_title' . $lang_suffix]) ? $popup_options['popup_title' . $lang_suffix] : (isset($popup_options['popup_title_uk']) ? $popup_options['popup_title_uk'] : ''));
+    $popup_text = esc_html(isset($popup_options['popup_text' . $lang_suffix]) ? $popup_options['popup_text' . $lang_suffix] : (isset($popup_options['popup_text_uk']) ? $popup_options['popup_text_uk'] : ''));
+    $popup_button_text = esc_html(isset($popup_options['popup_button_text' . $lang_suffix]) ? $popup_options['popup_button_text' . $lang_suffix] : (isset($popup_options['popup_button_text_uk']) ? $popup_options['popup_button_text_uk'] : ''));
+    $popup_button_link = esc_url(isset($popup_options['popup_button_link' . $lang_suffix]) ? $popup_options['popup_button_link' . $lang_suffix] : (isset($popup_options['popup_button_link_uk']) ? $popup_options['popup_button_link_uk'] : ''));
+    $popup_condition = esc_attr(isset($popup_options['popup_condition' . $lang_suffix]) ? $popup_options['popup_condition' . $lang_suffix] : (isset($popup_options['popup_condition_uk']) ? $popup_options['popup_condition_uk'] : 'timer'));
+    $popup_condition_value = intval(isset($popup_options['popup_condition_value' . $lang_suffix]) ? $popup_options['popup_condition_value' . $lang_suffix] : (isset($popup_options['popup_condition_value_uk']) ? $popup_options['popup_condition_value_uk'] : 5));
     ?>
 
     <div id="template-theme-popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 20px; border: 1px solid #ccc;">
@@ -64,7 +67,6 @@ if ($popup_options) {
     </script>
     <?php
 }
-
 ?>
 	</div><?php // Закрываем div#content, открытый в header.php ?>
 
