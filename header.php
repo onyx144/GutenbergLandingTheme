@@ -10,8 +10,11 @@
 
 // Получаем массив сохраненных опций хедера
 $header_options = get_option( 'template_theme_header_options' );
+$header_style = '';
 $post_id = get_the_ID();
-
+if ( isset($header_options['header_background_color']) && !empty($header_options['header_background_color']) ) {
+    $header_style = 'style="background-color:' . esc_attr($header_options['header_background_color']) . ';"';
+}
 // Устанавливаем значения по умолчанию, если опции еще не сохранены или отсутствуют
 $show_language_switcher = $header_options['show_language_switcher'] ?? '0'; // '0' или '1'
 $show_auth_buttons      = $header_options['show_auth_buttons'] ?? '0';        // '0' или '1'
@@ -146,7 +149,7 @@ $popup = isset($options['popup']) ? $options['popup'] : array();
 <div id="page" class="site">
     <a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'template_theme' ); ?></a>
 
-    <header id="masthead" class="site-header">
+    <header <?php echo $header_style; ?> id="masthead" class="site-header">
         <div class="site-branding">
             <?php
             // Вывод логотипа (управляется через Кастомайзер)
