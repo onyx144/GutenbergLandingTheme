@@ -87,7 +87,19 @@ function template_theme_settings_init() {
             'description' => __( 'Выберите цвет фона для хедера. Будет применяться через inline-стили или в вашем шаблоне.', 'template_theme' )
         ]
     );
-
+    add_settings_field(
+        'header_button_color',
+        __( 'Цвет кнопок Вход/Регистрация', 'template_theme' ),
+        'template_theme_render_field_colorpicker_button',
+        'template_theme_settings',
+        'template_theme_header_auth_buttons_section',
+        [
+            'option_name' => 'template_theme_header_options',
+            'field_id'    => 'header_button_color',
+            'label_for'   => 'header_button_color',
+            'description' => __( 'Цвет кнопок "Войти" и "Регистрация", если они включены.', 'template_theme' )
+        ]
+    );
     
     
 }
@@ -121,6 +133,30 @@ function template_theme_header_lang_section_callback() {
  * Callback-функции для отрисовки полей настроек
  */
 function template_theme_render_field_colorpicker( $args ) {
+    $options = get_option( $args['option_name'] );
+    $value = isset( $options[ $args['field_id'] ] ) ? $options[ $args['field_id'] ] : '#ffffff';
+    $description = isset($args['description']) ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
+
+    $input_id = esc_attr( $args['label_for'] );
+    $option_name = esc_attr( $args['option_name'] );
+    $field_id = esc_attr( $args['field_id'] );
+    $escaped_value = esc_attr( $value );
+
+    // Отображаем текстовое поле и цветовой input рядом
+    printf(
+        '
+        <input type="text" id="%s" name="%s[%s]" value="%s" class="regular-text template-colorpicker" />
+        <input type="color" id="%s_picker" value="%s" style="vertical-align: middle; margin-left: 10px;" onchange="document.getElementById(\'%s\').value = this.value;" oninput="document.getElementById(\'%s\').value = this.value;" />
+        %s
+        ',
+        $input_id, $option_name, $field_id, $escaped_value,
+        $input_id, $escaped_value,
+        $input_id, $input_id,
+        $description
+    );
+}
+
+function template_theme_render_field_colorpicker_button( $args ) {
     $options = get_option( $args['option_name'] );
     $value = isset( $options[ $args['field_id'] ] ) ? $options[ $args['field_id'] ] : '#ffffff';
     $description = isset($args['description']) ? '<p class="description">' . esc_html($args['description']) . '</p>' : '';
@@ -215,6 +251,13 @@ function template_theme_sanitize_header_options( $input ) {
             $sanitized_input['header_background_color'] = $color;
         }
     }
+    if ( isset( $input['header_button_color'] ) ) {
+        $color = sanitize_hex_color( $input['header_button_color'] );
+        if ( $color ) {
+            $sanitized_input['header_button_color'] = $color;
+        }
+    }
+    
     return $sanitized_input;
 }
 

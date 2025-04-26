@@ -15,6 +15,8 @@ $post_id = get_the_ID();
 if ( isset($header_options['header_background_color']) && !empty($header_options['header_background_color']) ) {
     $header_style = 'style="background-color:' . esc_attr($header_options['header_background_color']) . ';"';
 }
+$button_color = !empty($options['header_button_color']) ? $options['header_button_color'] : '#000000';
+
 // Устанавливаем значения по умолчанию, если опции еще не сохранены или отсутствуют
 $show_language_switcher = $header_options['show_language_switcher'] ?? '0'; // '0' или '1'
 $show_auth_buttons      = $header_options['show_auth_buttons'] ?? '0';        // '0' или '1'
@@ -184,7 +186,7 @@ $popup = isset($options['popup']) ? $options['popup'] : array();
                 <div class="auth-buttons">
                     <?php if ( ! is_user_logged_in() ) : // Показываем только неавторизованным пользователям ?>
                         <?php if ( ! empty( $login_button_text ) && ! empty( $login_button_url ) ) : ?>
-                            <a href="<?php echo esc_url( $login_button_url ); ?>" class="button button-login">
+                            <a style="background-color: <?php echo esc_attr($button_color); ?>;" href="<?php echo esc_url( $login_button_url ); ?>" class="button button-login">
                                 <?php echo esc_html( $login_button_text ); ?>
                             </a>
                         <?php endif; ?>
@@ -193,7 +195,7 @@ $popup = isset($options['popup']) ? $options['popup'] : array();
                         // Показываем кнопку регистрации только если регистрация разрешена в настройках WP
                      
                             if ( ! empty( $register_button_text ) && ! empty( $register_button_url ) ) : ?>
-                                <a href="<?php echo esc_url( $register_button_url ); ?>" class="button button-register">
+                                <a style="background-color: <?php echo esc_attr($button_color); ?>;" href="<?php echo esc_url( $register_button_url ); ?>" class="button button-register">
                                     <?php echo esc_html( $register_button_text ); ?>
                                 </a>
                             <?php endif;
