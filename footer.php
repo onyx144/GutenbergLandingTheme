@@ -13,7 +13,37 @@
 $popup_options = get_option('template_theme_popup_options');
 $current_lang = function_exists('pll_current_language') ? pll_current_language() : 'uk';
 $lang_suffix = '_' . $current_lang;
+global $post;
+$custom_links = [];
 
+if (isset($post->ID)) {
+    $custom_links = get_post_meta($post->ID, '_custom_links', true) ?: [];
+
+
+}
+?>
+<script>
+const customLinkMap = <?php echo json_encode($custom_links); ?>;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('a');
+
+    links.forEach(link => {
+        const href = link.getAttribute('href');
+        
+        // Проверяем, есть ли соответствие в customLinkMap
+        Object.keys(customLinkMap).forEach(oldHref => {
+            if (href.includes(oldHref)) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    window.location.href = customLinkMap[oldHref];
+                });
+            }
+        });
+    });
+});
+</script> 
+<?php
 if ($popup_options) {
     $popup_image = esc_url(isset($popup_options['popup_image' . $lang_suffix]) ? $popup_options['popup_image' . $lang_suffix] : (isset($popup_options['popup_image_uk']) ? $popup_options['popup_image_uk'] : ''));
     $popup_title = esc_html(isset($popup_options['popup_title' . $lang_suffix]) ? $popup_options['popup_title' . $lang_suffix] : (isset($popup_options['popup_title_uk']) ? $popup_options['popup_title_uk'] : ''));
@@ -115,6 +145,7 @@ if ($popup_options) {
     </footer></div><?php // Закрываем div#page, открытый в header.php ?>
 
 <?php wp_footer(); // Важнейший хук! WordPress и плагины используют его для добавления скриптов и прочего перед закрытием </body> ?>
+
 
 </body>
 </html>

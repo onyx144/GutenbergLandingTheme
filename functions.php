@@ -114,6 +114,7 @@ require get_template_directory() . '/inc/admin/pop-up.php';
 require get_template_directory() . '/inc/admin/style-register.php';
 require get_template_directory() . '/inc/admin/translate-meta-fields.php';
 require get_template_directory() . '/inc/admin/footer-meta-fields.php';
+require get_template_directory() . '/inc/admin/link-edit.php';
 
 require_once( get_template_directory() . '/inc/admin/functions-admin.php' );
 require_once( get_template_directory() . '/inc/admin/function-tos.php' );
