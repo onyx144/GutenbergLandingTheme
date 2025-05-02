@@ -23,6 +23,7 @@ if (isset($post->ID)) {
 }
 ?>
 <script>
+    //Скрипты
 const customLinkMap = <?php echo json_encode($custom_links); ?>;
 
 document.addEventListener('DOMContentLoaded', function() {
