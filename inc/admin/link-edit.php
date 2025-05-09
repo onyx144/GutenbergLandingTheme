@@ -53,4 +53,5 @@ add_action('save_post', function($post_id) {
     }
 });
 //Отвечает за редактор ссылок на странице
+//Uuuu
 ?>
